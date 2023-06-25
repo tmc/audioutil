@@ -1,3 +1,4 @@
+// Command transcrbe records audio from the microphone and transcribes it.
 package main
 
 import (
