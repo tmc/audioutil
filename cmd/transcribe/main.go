@@ -1,4 +1,9 @@
 // Command transcrbe records audio from the microphone and transcribes it.
+//
+// Usage of transcribe:
+//
+//	-duration duration
+//	  	duration of audio to transcribe (default 5s)
 package main
 
 import (
