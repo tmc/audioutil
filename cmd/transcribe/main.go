@@ -1,4 +1,4 @@
-// Command transcrbe records audio from the microphone and transcribes it.
+// Command transcribe records audio from the microphone and transcribes it.
 //
 // Usage of transcribe:
 //
