@@ -13,14 +13,12 @@ var defaultConfig = RightHandConfig{
 		{
 			Program: "iTerm2",
 			Examples: []FewShotExample{
-				{
-					Input:  "change to my home directory",
-					Output: "cd ~",
-				},
-				{
-					Input:  "new tab",
-					Output: "{Command}+t",
-				},
+				{Input: "change to my home directory",
+					Output: "cd ~"},
+				{Input: "new tab",
+					Output: "{Command}+t"},
+				{Input: "Interactively rebase the last 3 commits",
+					Output: "git rebase -i HEAD~3"},
 			},
 		},
 	},
