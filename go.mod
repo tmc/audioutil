@@ -3,6 +3,7 @@ module github.com/tmc/audioutil
 go 1.20
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230606002726-57543c169e27
 	github.com/go-audio/audio v1.0.0
 	github.com/go-audio/wav v1.1.0

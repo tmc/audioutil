@@ -64,6 +64,11 @@ func New() (*WhisperAudio, error) {
 
 // Start starts the audio stream.
 func (wa *WhisperAudio) Start() error {
+	var err error
+	wa.mctx, err = wa.model.NewContext()
+	if err != nil {
+		return fmt.Errorf("could not initialize context: %w", err)
+	}
 	if err := wa.stream.Start(); err != nil {
 		return fmt.Errorf("could not start stream: %w", err)
 	}

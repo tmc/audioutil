@@ -110,7 +110,6 @@ func (app *App) runMainLoop(ctx context.Context) {
 				continue
 			}
 			audioBuffer = append(audioBuffer, buf...)
-
 		}
 	}
 }

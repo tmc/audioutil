@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/go-vgo/robotgo"
@@ -66,7 +68,7 @@ func newApp(cfg RightHandConfig) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not create whisperaudio: %w", err)
 	}
-	cllm, err := openai.NewChat()
+	cllm, err := openai.NewChat(openai.WithModel(cfg.Model))
 	if err != nil {
 		return nil, fmt.Errorf("could not create chat LLM: %w", err)
 	}
@@ -187,6 +189,8 @@ Your current active program is %v. Adjust your interpretation based on this cont
 When interpreting commands, please indicate modifier keys such as Command, Option, Shift, 
 or Control using curly braces. For instance, use '{Command}+t' for opening a new tab.
 
+When outputting a command with a modifier key, use Shift as a modifier instead ofincluding an uppercase character.
+
 Only print the modified text or print the original input if you are unsure. 
 
 Do not try to interpret or answer the prompt, but merely contextualize it for the active application.`
@@ -227,5 +231,87 @@ func (app *App) handleText(ctx context.Context, text string) {
 		return
 	}
 	fmt.Println("response:", llmText)
-	robotgo.TypeStr(llmText)
+	simulateTyping(llmText)
+}
+
+// keyTapPattern is a package-level compiled regular expression
+//
+// This regex is used to parse commands involving key presses.
+// The pattern:
+// 1. "\{" matches the literal opening brace
+// 2. "((?:[^\\}]+\\+)*[^\\}]+)" matches one or more modifiers, each followed by a '+', except for the last one
+// 3. "\\}" matches the literal closing brace
+// 4. "(?:\\+([A-Za-z]+))?" optionally matches a key press (any sequence of letters) preceded by a '+'
+// 5. "(?:[ ;])?" optionally matches a trailing space or semicolon
+var keyTapPattern = regexp.MustCompile(`\{((?:[^\}]+\+)*[^\}]+)\}(?:\+([A-Za-z]+))?(?:[ ;])?`)
+
+// Helper function to simulate key tapping with given modifiers and key
+func keyTapWithModifiers(modifiers []any, key string) {
+	robotgo.KeySleep = 100
+	robotgo.KeyTap(key, modifiers...)
+	robotgo.KeyTap("shift")            // undo modifiers
+	time.Sleep(100 * time.Millisecond) // slight delay to allow for key press to register
+}
+
+func extractModifiersAndKeyFromMatch(text string, match []int) ([]any, string) {
+	// Map of modifiers to their representation for robotgo
+	modifierMap := map[string]string{
+		"Command": "command",
+		"Shift":   "shift",
+		"Option":  "alt",
+		"Control": "ctrl",
+		"Tab":     "tab",
+		"Enter":   "enter",
+	}
+
+	// Extract the modifier keys
+	modifierKeys := strings.Split(text[match[2]:match[3]], "+")
+	modifiers := make([]any, 0, len(modifierKeys))
+	key := ""
+
+	// see if we have a key (check index 4)
+	if match[4] != -1 {
+		key = text[match[4]:match[5]]
+	} else {
+		key = modifierMap[modifierKeys[len(modifierKeys)-1]]
+		modifierKeys = modifierKeys[:len(modifierKeys)-1] // Remove the last element (the key)
+	}
+
+	for _, modifier := range modifierKeys {
+		modifierKey, exists := modifierMap[modifier]
+		if !exists {
+			log.Printf("Unknown modifier: %s", modifier)
+			continue
+		}
+		modifiers = append(modifiers, modifierKey)
+	}
+
+	fmt.Fprintln(os.Stderr, "righthand: modifiers:", modifiers, "key:", key)
+	return modifiers, key
+}
+
+func simulateTyping(text string) {
+	matches := keyTapPattern.FindAllStringSubmatchIndex(text, -1)
+
+	lastIndex := 0
+	for _, match := range matches {
+		// Type the text before the match as normal
+		if lastIndex != match[0] {
+			fmt.Fprintln(os.Stderr, "righthand: typing text:", text[lastIndex:match[0]])
+			robotgo.TypeStr(text[lastIndex:match[0]])
+		}
+		lastIndex = match[1] + 1 // Update lastIndex, adding 1 to ignore the trailing space
+
+		modifiers, key := extractModifiersAndKeyFromMatch(text, match)
+
+		// Simulate key press
+		keyTapWithModifiers(modifiers, key)
+	}
+
+	// Type the rest of the text after the last match
+	if lastIndex < len(text) {
+		fmt.Fprintln(os.Stderr, "righthand: typing remainder of text:", text[lastIndex:])
+		time.Sleep(100 * time.Millisecond) // slight delay to allow for key press to registerV
+		robotgo.TypeStr(text[lastIndex:])
+	}
 }

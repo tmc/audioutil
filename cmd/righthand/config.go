@@ -8,7 +8,7 @@ import (
 )
 
 var defaultConfig = RightHandConfig{
-	Model: "gpt4",
+	Model: "gpt-4",
 	Programs: []ProgramFewShotExamples{
 		{
 			Program: "iTerm2",
@@ -19,6 +19,17 @@ var defaultConfig = RightHandConfig{
 					Output: "{Command}+t"},
 				{Input: "Interactively rebase the last 3 commits",
 					Output: "git rebase -i HEAD~3"},
+				// horizontal split
+				{Input: "split horizontally",
+					Output: "{Command+Shift}+d"},
+			},
+		},
+		{
+			Program: "Google Chrome",
+			Examples: []FewShotExample{
+				// visit cnn in chrome:
+				{Input: "Visit CNN.com and a new tab.",
+					Output: "{Command}+t\nhttps://cnn.com{Enter}"},
 			},
 		},
 	},
