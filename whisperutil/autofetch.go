@@ -62,6 +62,14 @@ func download(ctx context.Context, p io.Writer, model, path string) (string, err
 		return "", fmt.Errorf("%s: %s", model, resp.Status)
 	}
 
+	// Create output directory, if needed
+	dir := filepath.Dir(path)
+	if info, err := os.Stat(dir); err != nil || !info.IsDir() {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return "", err
+		}
+	}
+
 	// If output file exists and is the same size as the model, skip
 	if info, err := os.Stat(path); err == nil && info.Size() == resp.ContentLength {
 		fmt.Fprintln(p, "Skipping", model, "as it already exists")
