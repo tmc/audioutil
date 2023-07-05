@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/ggerganov/whisper.cpp/bindings/go/pkg/whisper"
 	"github.com/gordonklaus/portaudio"
 	"github.com/tmc/audioutil/whisperutil"
+	"github.com/tmc/whisper.cpp/bindings/go/pkg/whisper"
 )
 
 const (

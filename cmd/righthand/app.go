@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ggerganov/whisper.cpp/bindings/go/pkg/whisper"
 	"github.com/go-vgo/robotgo"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/objc"
@@ -19,6 +18,7 @@ import (
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/tmc/langchaingo/schema"
+	"github.com/tmc/whisper.cpp/bindings/go/pkg/whisper"
 )
 
 const (
