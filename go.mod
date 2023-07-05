@@ -12,6 +12,7 @@ require (
 	github.com/gordonklaus/portaudio v0.0.0-20221027163845-7c3b689db3cc
 	github.com/progrium/macdriver v0.3.1-0.20230702010716-ac280d62fcb1
 	github.com/tmc/langchaingo v0.0.0-20230701162323-81dcfa6b690d
+	github.com/tmc/whisper.cpp/bindings/go v0.0.0-20230705060910-11b6cdba80a7
 )
 
 require (
@@ -40,5 +41,3 @@ require (
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
-
-replace github.com/ggerganov/whisper.cpp/bindings/go => github.com/tmc/whisper.cpp/bindings/go v0.0.0-20230704224959-aff9df9cd952
