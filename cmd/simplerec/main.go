@@ -5,15 +5,18 @@ import (
 	"os"
 
 	"github.com/go-audio/audio"
+	"github.com/go-audio/transforms"
 	"github.com/go-audio/wav"
 	"github.com/gordonklaus/portaudio"
 )
 
 const (
-	sampleRate = 44100
+	//sampleRate = 44100
+	sampleRate = 16000
 	channels   = 1
 	seconds    = 3
 	bufferSize = 512
+	bitDepth   = 24
 )
 
 func printAudioDevices() error {
@@ -45,13 +48,15 @@ func main() {
 	defer portaudio.Terminate()
 	printAudioDevices()
 
-	in := make([]int32, bufferSize*channels)
+	in := make([]float32, bufferSize*channels)
 	stream, err := portaudio.OpenDefaultStream(channels, 0, sampleRate, bufferSize, in)
 	if err != nil {
 		fmt.Printf("Error: Could not open default stream - %v", err)
 		return
 	}
 	defer stream.Close()
+
+	fmt.Printf("stream.Info(): %+v\n", stream.Info())
 
 	outFile, err := os.Create("output.wav")
 	if err != nil {
@@ -60,7 +65,8 @@ func main() {
 	}
 	defer outFile.Close()
 
-	enc := wav.NewEncoder(outFile, sampleRate, 16, channels, 1)
+	const wavAudioFormat = 1
+	enc := wav.NewEncoder(outFile, sampleRate, bitDepth, channels, wavAudioFormat)
 	if err != nil {
 		fmt.Printf("Error: Could not create encoder - %v", err)
 		return
@@ -79,12 +85,21 @@ func main() {
 			fmt.Printf("Error: Could not read from stream - %v", err)
 			return
 		}
+		buf := &audio.Float32Buffer{Data: in, Format: &audio.Format{SampleRate: sampleRate, NumChannels: channels}}
 
-		ints := make([]int, len(in))
-		for index, val := range in {
-			ints[index] = int(val >> 16)
+		if err := transforms.PCMScaleF32(buf, bitDepth); err != nil {
+			fmt.Printf("Error: Could not scale buffer - %v", err)
+			return
 		}
-		err = enc.Write(&audio.IntBuffer{Data: ints, Format: &audio.Format{SampleRate: sampleRate, NumChannels: channels}})
+
+		ibuf := buf.AsIntBuffer()
+
+		//for index, val := range in {
+		//	fmt.Println(index, in[index], ibuf.Data[index], int(val*32767), int(val))
+		//	//ibuf.Data[index] = int(val * 32767)
+		//}
+
+		err = enc.Write(ibuf)
 		if err != nil {
 			fmt.Printf("Error: Could not write to buffer - %v", err)
 			return

@@ -3,9 +3,9 @@ module github.com/tmc/audioutil
 go 1.20
 
 require (
-	github.com/davecgh/go-spew v1.1.1
-	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230606002726-57543c169e27
+	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230704172827-4774d2feb01a
 	github.com/go-audio/audio v1.0.0
+	github.com/go-audio/transforms v0.0.0-20180121090939-51830ccc35a5
 	github.com/go-audio/wav v1.1.0
 	github.com/go-vgo/robotgo v0.100.10
 	github.com/goccy/go-yaml v1.11.0
@@ -41,4 +41,4 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
 
-replace github.com/ggerganov/whisper.cpp/bindings/go => github.com/tmc/whisper.cpp/bindings/go v0.0.0-20230624233940-156931e468dd
+replace github.com/ggerganov/whisper.cpp/bindings/go => github.com/tmc/whisper.cpp/bindings/go v0.0.0-20230704224959-aff9df9cd952

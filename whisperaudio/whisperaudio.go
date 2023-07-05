@@ -3,6 +3,7 @@ package whisperaudio
 import (
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"github.com/ggerganov/whisper.cpp/bindings/go/pkg/whisper"
@@ -24,16 +25,16 @@ type WhisperAudio struct {
 }
 
 // New creates a new WhisperAudio instance.
-func New() (*WhisperAudio, error) {
+func New(opts ...whisperutil.Option) (*WhisperAudio, error) {
 	// Initialize portaudio
 	if err := portaudio.Initialize(); err != nil {
 		return nil, fmt.Errorf("could not initialize portaudio: %w", err)
 	}
 
 	// Initialize whisper model
-	modelPath, err := whisperutil.GetModelPath()
+	modelPath, err := whisperutil.GetModelPath(opts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not get model path: %w", err)
 	}
 
 	model, err := whisper.New(modelPath)
@@ -45,6 +46,8 @@ func New() (*WhisperAudio, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not initialize context: %w", err)
 	}
+	//mctx.SetLanguage("en")
+	//mctx.SetSpeedup(true)
 
 	// Open audio stream
 	in := make([]float32, bufferSize*channels)
@@ -60,6 +63,33 @@ func New() (*WhisperAudio, error) {
 		stream:   stream,
 		inBuffer: in,
 	}, nil
+}
+
+// DumpDeviceInfo dumps the device info.
+func DumpDeviceInfo() {
+	portaudio.Initialize()
+
+	fmt.Fprintln(os.Stderr, "default input device:")
+	in, err := portaudio.DefaultInputDevice()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintf(os.Stderr, "%+v\n", in)
+	fmt.Fprintln(os.Stderr, "default output device:")
+	out, err := portaudio.DefaultOutputDevice()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintf(os.Stderr, "%+v\n", out)
+
+	fmt.Fprintln(os.Stderr, "devices:")
+	devices, err := portaudio.Devices()
+	if err != nil {
+		panic(err)
+	}
+	for _, d := range devices {
+		fmt.Println(d)
+	}
 }
 
 // Start starts the audio stream.
@@ -100,7 +130,9 @@ func (wa *WhisperAudio) Stop() error {
 
 // Transcribe transcribes the given audio data.
 func (wa *WhisperAudio) Transcribe(buf []float32) (string, error) {
-	if err := wa.mctx.Process(buf, nil); err != nil {
+	if err := wa.mctx.Process(buf, nil, func(p int) {
+		fmt.Fprintf(os.Stderr, "progress: %d%%\n", p)
+	}); err != nil {
 		return "", fmt.Errorf("could not process audio: %w", err)
 	}
 	result := ""

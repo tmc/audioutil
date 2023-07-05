@@ -46,6 +46,7 @@ func newApp() (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not create whisperaudio: %w", err)
 	}
+	whisperaudio.DumpDeviceInfo()
 	return &App{
 		listeningToggle: make(chan struct{}, 1),
 		wa:              wa,

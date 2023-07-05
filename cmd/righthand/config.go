@@ -8,7 +8,8 @@ import (
 )
 
 var defaultConfig = RightHandConfig{
-	Model: "gpt-4",
+	LLMModel:     "gpt-4",
+	WhisperModel: "base",
 	Programs: []ProgramFewShotExamples{
 		{
 			Program: "iTerm2",
@@ -83,8 +84,11 @@ func saveYaml(path string, v interface{}) error {
 
 // RightHandConfig is the configuration file for RightHand.
 type RightHandConfig struct {
-	Model    string                   `json:"model"`
-	Programs []ProgramFewShotExamples `json:"programs"`
+	LLMModel     string                   `json:"llm_model"`
+	WhisperModel string                   `json:"whisper_model"`
+	Programs     []ProgramFewShotExamples `json:"programs"`
+
+	DumpWAVFile bool
 }
 
 // ProgramFewShotExamples is a program with a list of few-shot examples.
