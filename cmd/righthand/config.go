@@ -9,7 +9,7 @@ import (
 
 var defaultConfig = RightHandConfig{
 	LLMModel:     "gpt-4",
-	WhisperModel: "base",
+	WhisperModel: "base.en",
 	Programs: []ProgramFewShotExamples{
 		{
 			Program: "iTerm2",

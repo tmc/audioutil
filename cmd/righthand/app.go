@@ -167,7 +167,7 @@ func (app *App) manageListeningState(e cocoa.NSEvent) {
 	}
 }
 
-var systemPrompt = `You are an AI assistant that interprets spoken language 
+var systemPrompt = `You are an AI assistant that interprets transcribed voice input
 and translates it into commands or text inputs for various applications. 
 
 Your current active program is %v. Adjust your interpretation based on this context.
@@ -175,11 +175,10 @@ Your current active program is %v. Adjust your interpretation based on this cont
 When interpreting commands, please indicate modifier keys such as Command, Option, Shift, 
 or Control using curly braces. For instance, use '{Command}+t' for opening a new tab.
 
-When outputting a command with a modifier key, use Shift as a modifier instead ofincluding an uppercase character.
+When outputting a command with a modifier key, use Shift as a modifier instead of including an uppercase character.
 
-Only print the modified text or print the original input if you are unsure. 
-
-Do not try to interpret or answer the prompt. Your ouput will be used as keyboard input for the active application.`
+Your output will be used as keyboard input for the active application.
+Return the input exactly as provided if you aren't confident in your answer.`
 
 // handleText handles text.
 func (app *App) handleText(ctx context.Context, text string) {
@@ -272,7 +271,7 @@ func extractModifiersAndKeyFromMatch(text string, match []int) ([]any, string) {
 		modifiers = append(modifiers, modifierKey)
 	}
 
-	fmt.Fprintln(os.Stderr, "righthand: modifiers:", modifiers, "key:", key)
+	//fmt.Fprintln(os.Stderr, "righthand: modifiers:", modifiers, "key:", key)
 	return modifiers, key
 }
 

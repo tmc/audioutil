@@ -32,11 +32,11 @@ graph TB
 
   subgraph RightHand Application
     RightHand -->|Toggles Listening| Audio[audioutil]
+    Audio -->|Collects Audio Data| Whisper[whisper.cpp]
+    Whisper -->|Transcribes Audio| RightHand
+    RightHand -->|Monitors Key Events| NSApp[macdriver/NSApp]
     RightHand -->|Handles Text| LLM[langchaingo]
     RightHand -->|Simulates Key Presses| Robotgo[robotgo]
-    Whisper -->|Transcribes Audio| RightHand
-    Audio -->|Collects Audio Data| Whisper[whisper.cpp]
-    RightHand -->|Monitors Key Events| NSApp[macdriver/NSApp]
   end
 
   LLM -->|Interprets Transcription + Context| GPT4[OpenAI/GPT-4]
