@@ -9,7 +9,7 @@ require (
 	github.com/go-vgo/robotgo v0.100.10
 	github.com/goccy/go-yaml v1.11.0
 	github.com/gordonklaus/portaudio v0.0.0-20221027163845-7c3b689db3cc
-	github.com/progrium/macdriver v0.3.1-0.20230702010716-ac280d62fcb1
+	github.com/progrium/macdriver v0.4.1-0.20230706190053-7e5bd0a70b46
 	github.com/tmc/langchaingo v0.0.0-20230701162323-81dcfa6b690d
 	github.com/tmc/whisper.cpp/bindings/go v0.0.0-20230705062322-9af4a3211895
 )
@@ -38,6 +38,6 @@ require (
 	github.com/vcaesar/keycode v0.10.0 // indirect
 	github.com/vcaesar/tt v0.20.0 // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )

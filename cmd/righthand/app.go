@@ -179,11 +179,11 @@ When outputting a command with a modifier key, use Shift as a modifier instead o
 
 Only print the modified text or print the original input if you are unsure. 
 
-Do not try to interpret or answer the prompt, but merely contextualize it for the active application.`
+Do not try to interpret or answer the prompt. Your ouput will be used as keyboard input for the active application.`
 
 // handleText handles text.
 func (app *App) handleText(ctx context.Context, text string) {
-	activeApp := fmt.Sprint(cocoa.NSWorkspace_sharedWorkspace().FrontmostApplication().LocalizedName())
+	activeApp := fmt.Sprint(cocoa.NSWorkspace_SharedWorkspace().FrontmostApplication().LocalizedName())
 	fmt.Println("active app:", activeApp)
 
 	messages := []schema.ChatMessage{
@@ -229,7 +229,7 @@ func (app *App) handleText(ctx context.Context, text string) {
 // 3. "\\}" matches the literal closing brace
 // 4. "(?:\\+([A-Za-z]+))?" optionally matches a key press (any sequence of letters) preceded by a '+'
 // 5. "(?:[ ;])?" optionally matches a trailing space or semicolon
-var keyTapPattern = regexp.MustCompile(`\{((?:[^\}]+\+)*[^\}]+)\}(?:\+([A-Za-z]+))?(?:[ ;])?`)
+var keyTapPattern = regexp.MustCompile(`\{((?:[^\}]+\+)*[^\}]+)\}(?:\+([A-Za-z1-9]+))?(?:[ ;])?`)
 
 // Helper function to simulate key tapping with given modifiers and key
 func keyTapWithModifiers(modifiers []any, key string) {

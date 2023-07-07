@@ -131,7 +131,9 @@ func (wa *WhisperAudio) Stop() error {
 // Transcribe transcribes the given audio data.
 func (wa *WhisperAudio) Transcribe(buf []float32) (string, error) {
 	if err := wa.mctx.Process(buf, nil, func(p int) {
-		fmt.Fprintf(os.Stderr, "progress: %d%%\n", p)
+		if p <= 100 {
+			fmt.Fprintf(os.Stderr, "progress: %d%%\n", p)
+		}
 	}); err != nil {
 		return "", fmt.Errorf("could not process audio: %w", err)
 	}
